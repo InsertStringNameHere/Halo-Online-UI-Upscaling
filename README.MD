@@ -49,19 +49,25 @@ Because the maximum height possible is 64 pixels, we first need to determine the
 
 Within Halo Online's font package, the maximum height of any one character is:
 
-- **fixedsys-9:** 16 pixels
-- **conduit-16:** 24 pixels
-- **conduit-32:** 46 pixels
-- **conduit-23:** 33 pixels
-- **conduit-18:** 45 pixels
-- **larabie-10:** 15 pixels
-- **pragmata-14:** 27 pixels
+> fixedsys-9: 16 pixels
+> 
+> conduit-16: 24 pixels
+> 
+> conduit-32: 46 pixels
+> 
+> conduit-23: 33 pixels
+> 
+> conduit-18: 45 pixels
+> 
+> larabie-10: 15 pixels
+> 
+> pragmata-14: 27 pixels
 
 Using these values, we can approximate what the maximum possible scaling value is for each character across every single font within the font package
 This can be doen by taking the highest value from the list above, which in our case is 46, and determining what is the highest possible value that we can multiply it by,
 and still have it stay under 64, which is the maximum character height. I've already done the math for you, and the approximate value is:
 
-**1.399999....**
+> 1.399999....
 
 Now, this isn't an optimal value, as this scaling value only results in around a 40% increase in overall resolution, which isn't a lot, and given the fairly low resolution
 of the characters within the font package, it doesn't result in the best upscaling. This is why I decided to use multiple values when upscaling the characters within
@@ -72,13 +78,19 @@ by values that are fairly close together, ensuirng that there won't be too many 
 
 The scaling values for each font are as follows:
 
-- **fixedsys-9:** 1.6666667 or 5/3
-- **conduit-16:** 1.6666667 or 5/3
-- **conduit-32:** 1.35 or 27/20
-- **conduit-23:** 1.6666667 or 5/3
-- **conduit-18:** 1.6666667 or 5/3 and 1.35 or 27/20
-- **larabie-10:** 1.6666667 or 5/3
-- **pragmata-14:** 1.6666667 or 5/3
+> fixedsys-9: 1.6666667 or 5/3
+> 
+> conduit-16: 1.6666667 or 5/3
+> 
+> conduit-32: 1.35 or 27/20
+> 
+> conduit-23: 1.6666667 or 5/3
+> 
+> conduit-18: 1.6666667 or 5/3 and 1.35 or 27/20
+> 
+> larabie-10: 1.6666667 or 5/3
+> 
+> pragmata-14: 1.6666667 or 5/3
 
 I was forced to use multiple values for one of the fonts, in this case "conduit-18" as some of the characters when scaled with the standard value of 5/3 would exceed
 the maximum character height of 64, so I was forced to use a smaller scaling value of 27/20, which kept each character under the height limit, as well as giving them some kind
@@ -104,7 +116,7 @@ within Halo Online's font package, and then multiplying by the decided upon scal
 
 This can be approximated through the following formula:
 
-**(Original Resolution) x (Scaling Value)**
+> (Original Resolution) x (Scaling Value)
 
 Once we have obtain this value, this value can then be used to scale the extracted characters to the desired resolution. Waifu2x has a feature tha allows me to scale an image
 based on a given height or width value, whilst keeping the original aspect ratio, which definitely made things easier. Alternatively, you can apply the same formula,
@@ -123,11 +135,11 @@ even if the UI elements were at the correct scale, they would be too big to rend
 The first issue can be remedied by the use of TagTool. TagTool has a command which will allows to scale all the UI tags by a given scaling value, which in out case
 is the same value that we used to upscale the characters within the font package. In our case we'll be using the value of 5/3. The command is to be input as shown:
 
-**rescalegui (Scaling Value)**
+> rescalegui (Scaling Value)
 
 or in our case
 
-**rescalegui 1.6666667**
+> rescalegui 1.6666667
 
 This will fix the issue of the characters being too big to fit within their specified UI elements, but now you'll run into the latter issue of the UI elements being too big
 to render on the screen, so it 'll render some of them offscreen. In order to remedy this, we'll need to make some change to ElDewrito's source code.
@@ -138,15 +150,35 @@ resolution of the UI, or the value that the game uses when determining the rende
 This is within the "ApplyUIResolution" method within Ui.cpp, and more specifically involves the following lines of code:
 
 > UIResolution[0] = (int)(((float)gameResolution[0] / (float)gameResolution[1]) * 640);
-
+>
 > UIResolution[1] = 640;
 
 and
 
 > UIResolution[0] = 1152;
-
+>
 > UIResolution[1] = (int)(((float)gameResolution[1] / (float)gameResolution[0]) * 1152);
 
-1152 x 640 is the default rendering resolution for the engine, and determines what the overall rendering resoltuion will be given the resolution specified within the game's settings. 
+1152 x 640 is the default rendering resolution for the engine, and determines what the overall rendering resoltuion will be given the resolution specified within the game's settings. These are the values that we need to multiplay by our given scaling resolution, which in out case is 5/3, with the following output being:
 
+> 1152 x 5/3 = 1920
 
+and
+
+> 640 x 5/3 = 1067
+
+These values can the substitued into the code from above, which should in turn look like:
+
+> UIResolution[0] = (int)(((float)gameResolution[0] / (float)gameResolution[1]) * 1067);
+>
+> UIResolution[1] = 1067;
+
+and
+
+> UIResolution[0] = 1920;
+>
+> UIResolution[1] = (int)(((float)gameResolution[1] / (float)gameResolution[0]) * 1920);
+
+This should fix the issue of the UI elements being too big to display on screen, now that the game rendering at the appropriate resolution. There is still the issue of the characters being too close together, and that is related to there display resolution. Each character has an image resolution which is the actual resolution of the bitmap that said character is using, and a display resolution which is the amount of space that said character actually takes up within the engine.
+
+The method I used to fix this was basic trial and error. I did however follow a basic rule that the display resolution should be no more than 3 or 4 pixels greater than the bitmap resolution. This ensured that each character was both aligned correctly, and that each character was evenly spaced apart from one another, however the amount of space between characters is purely subjective.
