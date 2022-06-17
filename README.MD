@@ -129,6 +129,11 @@ Once each character has been scaled, it can then imported into the font package,
 Assuming that all the characters don't surpass any of the resolution or size limits, then the font package should load perfectly fine. However, you may notice that
 the fonts are too large for the UI elements that they are placed in, and that some of the characters are too close together.
 
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/5.jpg)
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/6.jpg)
+
+
 This is because the UI tags and bitmaps have not been scaled with the fonts, so they appear too small, and the egine itself isn't rendering at the correct resolution, so
 even if the UI elements were at the correct scale, they would be too big to render on screen.
 
@@ -141,8 +146,16 @@ or in our case
 
 > rescalegui 1.6666667
 
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/1.png)
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/2.png)
+
 This will fix the issue of the characters being too big to fit within their specified UI elements, but now you'll run into the latter issue of the UI elements being too big
 to render on the screen, so it 'll render some of them offscreen. In order to remedy this, we'll need to make some change to ElDewrito's source code.
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/7.jpg)
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/8.jpg)
 
 In order to remedy this issue properly we'll need to make some specific changes to ElDewrito's source code, more specifically, we'll need to make changes to the rendering
 resolution of the UI, or the value that the game uses when determining the rendering resolution.
@@ -158,6 +171,8 @@ and
 > UIResolution[0] = 1152;
 >
 > UIResolution[1] = (int)(((float)gameResolution[1] / (float)gameResolution[0]) * 1152);
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/3.png)
 
 1152 x 640 is the default rendering resolution for the engine, and determines what the overall rendering resoltuion will be given the resolution specified within the game's settings. These are the values that we need to multiplay by our given scaling resolution, which in out case is 5/3, with the following output being:
 
@@ -179,8 +194,16 @@ and
 >
 > UIResolution[1] = (int)(((float)gameResolution[1] / (float)gameResolution[0]) * 1920);
 
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/4.png)
+
 This should fix the issue of the UI elements being too big to display on screen, now that the game rendering at the appropriate resolution. There is still the issue of the characters being too close together, and that is related to there display resolution. Each character has an image resolution which is the actual resolution of the bitmap that said character is using, and a display resolution which is the amount of space that said character actually takes up within the engine.
 
-The method I used to fix this was basic trial and error. I did however follow a basic rule that the display resolution should be no more than 3 or 4 pixels greater than the bitmap resolution. This ensured that each character was both aligned correctly, and that each character was evenly spaced apart from one another, however the amount of space between characters is purely subjective.
+The method I used to fix this was basic trial and error. I did however follow a basic rule that the display resolution should be no more than 3 or 4 pixels greater than the bitmap resolution. This ensured that each character was both aligned correctly, and that each character was evenly spaced apart from one another, however the amount of space between characters is purely subjective, so experiment with differnt values at your discretion until you get a result that you like.
+
+In the end you should end up something that looks simialr to this. Depending on how you setup character display resolutions, and character offsets, it may look slightly different, but hopefully you end up with correctly aligned and sharp looking characters.
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/9.jpg)
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/10.jpg)
 
 #
