@@ -105,11 +105,19 @@ Now, normally we would just extract the existing characters from within the font
 However, there are several issues with doing that. The main issue is that the resolution of the characters within the font package are so low that it is pretty hard
 for even a decent image processing algorithim to upscale them correctly, and they are also so low detail, that even upscaling cannot correct them.
 
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/11.png)![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/12.png)![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/13.png)![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/14.png)![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/15.png)
+
+As you can see, the original characters are a fairly low resolution, and are of a fairly low quality, making upscaling using these as basis not very practical.
+
 This is why I decided to look into using MCC's fonts. MCC has 3 different font packages, one which is the same resolution as Halo Online's font package, one that is
 2x the resolution, and one that is 3x the resolution. After some experimenting with downscaling from the 2x and the 3x font packages, I found that I got the best results when
 downscaling from the 2x font packages. I have feeling this is down to the image scaler built into Waifu2x, which probably can't properly downscale the amount of image data
 within the 3x characters, however your mileage may vary depending on which application you use. The characters can now be extracted from the font packages, and are ready for
 in this case downscaling.
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/16.png)![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/17.png)![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/18.png)![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/19.png)![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/20.png)
+
+The MCC 2x fonts are clearly of much higher quality, and are a greater resolution, which makes them ideal to use as basis when rescaling them for use within Halo Online's engine.
 
 Now that we have our extracted fonts, we can now downscale them to our desired scale. This was accomplished by first determinign the original resolution fo each font
 within Halo Online's font package, and then multiplying by the decided upon scaling value. 
@@ -121,6 +129,10 @@ This can be approximated through the following formula:
 Once we have obtain this value, this value can then be used to scale the extracted characters to the desired resolution. Waifu2x has a feature tha allows me to scale an image
 based on a given height or width value, whilst keeping the original aspect ratio, which definitely made things easier. Alternatively, you can apply the same formula,
 but to both the width and the height of the image, in order to determine what resolution to scale it to.
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/21.png)![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/22.png)![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/23.png)![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/24.png)![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/25.png)
+
+By using the MCC fonts as a basis, you can clearly see that we get fonts that, while not the highest resolution, especially whne compared to MCC's fonts, they are still a considerable upgrade over the default characters, and are of substantialy higher quality.
 
 Once each character has been scaled, it can then imported into the font package, replacing the existing characters. You can also add addition characters if need be.
 
