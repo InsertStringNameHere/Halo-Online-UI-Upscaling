@@ -182,3 +182,5 @@ and
 This should fix the issue of the UI elements being too big to display on screen, now that the game rendering at the appropriate resolution. There is still the issue of the characters being too close together, and that is related to there display resolution. Each character has an image resolution which is the actual resolution of the bitmap that said character is using, and a display resolution which is the amount of space that said character actually takes up within the engine.
 
 The method I used to fix this was basic trial and error. I did however follow a basic rule that the display resolution should be no more than 3 or 4 pixels greater than the bitmap resolution. This ensured that each character was both aligned correctly, and that each character was evenly spaced apart from one another, however the amount of space between characters is purely subjective.
+
+#
