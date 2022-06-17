@@ -1,5 +1,5 @@
 #
-# ElDewrito UI and Font Scaling
+# Halo Online UI and Font Scaling
 
 This is a repository for information relating to the scaling and modification of UI Elements and fonts within both Halo Online, and to a lesser extent, ElDewrito.
 This respository only contains information relating to the modification of in engine UI elements and fonts, and does not contain information realting to the 
