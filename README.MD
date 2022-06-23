@@ -219,3 +219,146 @@ In the end you should end up something that looks simialr to this. Depending on 
 ![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/10.jpg)
 
 #
+# Bug Fixes
+After you have finshed importing the fonts into the engine, and modifiying the DLL to render at the correct resolution, you may notice a few issues with the alignment of some of the UI elements, with the main one being the selection boxes within both the map selection menu as well as the gametype selection menu.
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/26.jpg)
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/27.jpg)
+
+This is caused by a small bug within the rescalegui command in tagtool, and also has to do with the fact that I scaled the fonts by an obscure value, which in turn caused rounding errors. This issue would not occur if we used a less obscure value such as 2 or 1.5, but in the evnt that you do come across this, here's how to resolve it.
+
+The issue in question has to do one of the "gui_screen_widget_definition" tags, more specifically:
+
+> ui\halox\pregame_lobby\selection\pregame_selection
+
+The array "bounds720p", within:
+
+> groupwidgets[].definition.listwidgets[].definition.items[].guirenderblock
+
+This array has 4 differnet fields, which approximately correspond to:
+
+> Top
+> 
+> Left
+> 
+> Bottom
+> 
+> Right
+
+The one we want to focus on is the "Top" value.
+
+The issue with this value, and this array as a whole is that tagtool multiplies each value by the scaling value specified within the rescale gui command.
+Instead how it should work, is that it should be the first non-zero value multiplied by the scale value, the multiplied by the block number by the block number. Since the "item" field has 13 blocks, and the first block, block "[0]" is always 0, unless specified, the second blokc is what is used a refernce point for each of the values in teh following blocks.
+
+In our case the default value within block "[1]" is 26, which when multiplied by our specified scale value, is approximately:
+
+> 43.333333333...
+
+TagTool will then round this value down to "43". This is value that we will use to determine the values for the following blocks. Following this logic, when can use teh following formula to derive the values for each following block:
+
+> ((Value of Block [1], or the first non-zero value) x (Scaling Value)) x (Block Number)
+
+When using this formula and our scaling value of 1.6666667 (5/3), we get the following results for each of the 13 blocks:
+
+> (26 x 5/3) x (0) = 0
+>
+> (26 x 5/3) x (1) = 43
+>
+> (26 x 5/3) x (2) = 86
+>
+> (26 x 5/3) x (3) = 129
+>
+> (26 x 5/3) x (4) = 172
+>
+> (26 x 5/3) x (5) = 215
+>
+> (26 x 5/3) x (6) = 258
+>
+> (26 x 5/3) x (7) = 301
+>
+> (26 x 5/3) x (8) = 244
+>
+> (26 x 5/3) x (9) = 387
+>
+> (26 x 5/3) x (10) = 430
+>
+> (26 x 5/3) x (11) = 473
+>
+> (26 x 5/3) x (12) = 516
+
+Now that we have determined the correct positonal values, we can then use tagtool to apply them to the cache.
+This can be done by using the following commands:
+
+> edittag ui\halox\pregame_lobby\selection\pregame_selection.gui_screen_widget_definition
+
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[0].guirenderblock.bounds720p 0 0 0 0
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/28.png)
+
+![Screenshot](https://github.com/InsertStringNameHere/Halo-Online-UI-Upscaling/blob/main/Images/README/29.png)
+
+The latter command can then be applied to all 13 blocks within the item field, starting at 0, and ending at 12.
+You will need to apply these commands to two blocks within the "groupwidget" field, the first one "[0]" being "base", and the second "[1]" being "subitem"
+Follwoing this methodlogy, the following commands should look like:
+
+> BASE
+> 
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[0].guirenderblock.bounds720p 0 0 0 0
+>
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[1].guirenderblock.bounds720p 43 0 0 0
+> 
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[2].guirenderblock.bounds720p 86 0 0 0
+> 
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[3].guirenderblock.bounds720p 129 0 0 0
+> 
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[4].guirenderblock.bounds720p 172 0 0 0
+> 
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[5].guirenderblock.bounds720p 215 0 0 0
+> 
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[6].guirenderblock.bounds720p 258 0 0 0
+> 
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[7].guirenderblock.bounds720p 301 0 0 0
+> 
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[8].guirenderblock.bounds720p 344 0 0 0
+> 
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[9].guirenderblock.bounds720p 387 0 0 0
+> 
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[10].guirenderblock.bounds720p 430 0 0 0
+> 
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[11].guirenderblock.bounds720p 473 0 0 0
+> 
+> setfield groupwidgets[0].definition.listwidgets[0].definition.items[12].guirenderblock.bounds720p 516 0 0 0
+
+
+> SUBITEM
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[0].guirenderblock.bounds720p 0 0 0 0
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[1].guirenderblock.bounds720p 43 0 0 0
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[2].guirenderblock.bounds720p 86 0 0 0
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[3].guirenderblock.bounds720p 129 0 0 0
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[4].guirenderblock.bounds720p 172 0 0 0
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[5].guirenderblock.bounds720p 215 0 0 0
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[6].guirenderblock.bounds720p 258 0 0 0
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[7].guirenderblock.bounds720p 301 0 0 0
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[8].guirenderblock.bounds720p 344 0 0 0
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[9].guirenderblock.bounds720p 387 0 0 0
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[10].guirenderblock.bounds720p 430 0 0 0
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[11].guirenderblock.bounds720p 473 0 0 0
+> 
+> setfield groupwidgets[1].definition.listwidgets[0].definition.items[12].guirenderblock.bounds720p 516 0 0 0
+
+The 4 valoues at the end of the command correspond to the "Top", "Left", "Bottom" and "Right" values within the "bounds720p" array, so setting you should set the first value to your pre-dtermined value, as outlined above.
+
+Assuming that you followed these steps correctly, the selection elements within the map select and gametype seletc menus should nwo be correctly aligned. This is the only issue that can occur becasue of the rescalegui command, but as I stated in the beginning, this is mainly due to the fact I scaled the fonts using an obscure value, hence causing rounding errors within the command.
