@@ -249,7 +249,7 @@ This array has 4 differnet fields, which approximately correspond to:
 The one we want to focus on is the "Top" value.
 
 The issue with this value, and this array as a whole is that tagtool multiplies each value by the scaling value specified within the rescale gui command.
-Instead how it should work, is that it should be the first non-zero value multiplied by the scale value, the multiplied by the block number by the block number. Since the "item" field has 13 blocks, and the first block, block "[0]" is always 0, unless specified, the second blokc is what is used a refernce point for each of the values in teh following blocks.
+Instead how it should work, is that it should be the first non-zero value multiplied by the scale value, then that should be multiplied by the block number. Since the "item" field has 13 blocks, and the first block, block "[0]" is always 0, unless specified as otherwise, the second blokc is what is used a refernce point for each of the values in teh following blocks.
 
 In our case the default value within block "[1]" is 26, which when multiplied by our specified scale value, is approximately:
 
